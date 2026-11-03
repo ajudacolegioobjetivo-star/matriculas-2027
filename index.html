@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Matrículas Escolares 2027</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    @media print {
+      .no-print { display: none !important; }
+      .print-only { display: block !important; }
+    }
+  </style>
+</head>
+<body class="bg-gray-50 font-sans text-gray-800 min-h-screen flex flex-col">
+
+  <!-- Header / Navbar -->
+  <header class="bg-indigo-900 text-white shadow-lg no-print">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex flex-wrap justify-between items-center">
+      <div class="flex items-center space-x-3">
+        <div class="p-2 bg-indigo-700 rounded-lg">
+          <i id="schoolLogoIcon" class="fas fa-graduation-cap text-2xl text-yellow-400"></i>
+        </div>
+        <div>
+          <h1 id="headerSchoolName" class="text-xl font-bold leading-tight">Colégio Ethos</h1>
+          <p id="headerSchoolSub" class="text-xs text-indigo-200">Sistema de Matrículas 2027</p>
+        </div>
+      </div>
+
+      <nav class="mt-4 sm:mt-0 flex space-x-2">
+        <button onclick="switchTab('public')" id="nav-public" class="px-4 py-2 text-sm font-medium rounded-md bg-indigo-800 text-white hover:bg-indigo-700 transition">
+          <i class="fas fa-user-plus mr-1">="</i> Nova Matrícula
+        </button>
+        <button onclick="switchTab('admin')" id="nav-admin" class="px-4 py-2 text-sm font-medium rounded-md text-indigo-200 hover:bg-indigo-800 transition">
+          <i class="fas fa-tasks mr-1"></i> Painel da Secretaria
+        </button>
+        <button onclick="switchTab('settings')" id="nav-settings" class="px-4 py-2 text-sm font-medium rounded-md text-indigo-200 hover:bg-indigo-800 transition">
+          <i class="fas fa-cog mr-1"></i> Configurações
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6">
+
+    <!-- TAB 1: FORMULÁRIO PÚBLICO DE MATRÍCULA -->
+    <section id="tab-public" class="space-y-6">
+      <div class="bg-white rounded-xl shadow-md p-6 border-t-4 border-indigo-600">
+        <h2 class="text-2xl font-bold text-gray-800 mb-2">Solicitação de Matrícula - <span class="schoolYearText">2027</span></h2>
+        <p class="text-gray-600 mb-6 text-sm">Preencha todos os campos do formulário para solicitar a vaga do aluno na instituição.</p>
+
+        <form id="enrollmentForm" onsubmit="handleFormSubmit(event)" class="space-y-6">
+          
+          <!-- Dados do Aluno -->
+          <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <h3 class="text-md font-semibold text-indigo-900 mb-3 flex items-center">
+              <i class="fas fa-child mr-2"></i> Dados do Aluno(a)
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="md:col-span-2">
+                <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">Nome Completo *</label>
+                <input type="text" id="studentName" required class="w-full p-2 border rounded-md focus:ring-2 focus:ring-indigo-500 outline-none">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">Data de Nascimento *</label>
+                <input type="date" id="studentBirth" required class="w-full p-2 border rounded-md focus:ring-2 focus:ring-indigo-500 outline-none">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">CPF do Aluno</label>
+                <input type="text" id="studentCpf" placeholder="000.000.000-00" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-indigo-500 outline-none">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">Série Pretendida *</label>
+                <select id="studentGrade" required class="w-full p-2 border rounded-md focus:ring-2 focus:ring-indigo-500 outline-none select-grades">
+                  <!-- Carregado via JS -->
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">Turno Desejado *</label>
+                <select id="studentShift" required class="w-full p-2 border rounded-md focus:ring-2 focus:ring-indigo-500 outline-none select-shifts">
+                  <!-- Carregado via JS -->
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dados dos Responsáveis -->
+          <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <h3 class="text-md font-semibold text-indigo-900 mb-3 flex items-center">
+              <i class="fas fa-user-shield mr-2"></i> Dados do Responsável Legal
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="md:col-span-2">
+                <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">Nome do Responsável *</label>
+                <input type="text" id="parentName" required class="w-full p-2 border rounded-md focus:ring-2 focus:ring-indigo-500 outline-none">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">CPF do Responsável *</label>
+                <input type="text" id="parentCpf" required placeholder="000.000.000-00" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-indigo-500 outline-none">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">Telefone / WhatsApp *</label>
+                <input type="tel" id="parentPhone" required placeholder="(00) 00000-0000" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-indigo-500 outline-none">
+              </div>
+              <div class="md:col-span-2">
+                <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">E-mail de Contato *</label>
+                <input type="email" id="parentEmail" required placeholder="exemplo@email.com" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-indigo-500 outline-none">
+              </div>
+            </div>
+          </div>
+
+          <!-- Endereço e Observações -->
+          <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <h3 class="text-md font-semibold text-indigo-900 mb-3 flex items-center">
+              <i class="fas fa-map-marker-alt mr-2"></i> Endereço e Informações Adicionais
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="md:col-span-2">
+                <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">Endereço Completo *</label>
+                <input type="text" id="parentAddress" required placeholder="Rua, número, bairro e cidade" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-indigo-500 outline-none">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">Necessidade Especial ou Alergia?</label>
+                <input type="text" id="specialNeeds" placeholder="Descreva se houver" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-indigo-500 outline-none">
+              </div>
+            </div>
+          </div>
+
+          <!-- Aceite LGPD -->
+          <div class="flex items-start space-x-2">
+            <input type="checkbox" id="lgpdCheck" required class="mt-1 h-4 w-4 text-indigo-600 rounded">
+            <label for="lgpdCheck" id="lgpdText" class="text-xs text-gray-600">
+              Declaro que as informações acima são verdadeiras e autorizo o tratamento dos dados pessoais fornecidos para fins estritamente educacionais e operacionais do processo de matrícula, em conformidade com a LGPD.
+            </label>
+          </div>
+
+          <div class="text-right">
+            <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-6 py-3 rounded-lg shadow-md transition flex items-center inline-flex">
+              <i class="fas fa-paper-plane mr-2"></i> Enviar Solicitação de Matrícula
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- TAB 2: PAINEL DA SECRETARIA (ADMIN / OPERADOR) -->
+    <section id="tab-admin" class="hidden space-y-6">
+      
+      <!-- Cabeçalho do Painel -->
+      <div class="flex flex-wrap justify-between items-center bg-white p-4 rounded-xl shadow-md">
+        <div>
+          <h2 class="text-xl font-bold text-gray-800">Painel da Secretaria</h2>
+          <p class="text-xs text-gray-500">Gestão das matrículas recebidas</p>
+        </div>
+        <div class="flex items-center space-x-3 mt-2 sm:mt-0">
+          <span id="userBadge" class="bg-indigo-100 text-indigo-800 text-xs font-semibold px-3 py-1 rounded-full flex items-center">
+            <i class="fas fa-user-shield mr-1"></i> Perfil: Administrador
+          </span>
+          <button onclick="logoutSession()" class="text-xs bg-red-100 text-red-700 hover:bg-red-200 px-3 py-1 rounded-md font-semibold transition">
+            <i class="fas fa-sign-out-alt mr-1"></i> Sair
+          </button>
+        </div>
+      </div>
+
+      <!-- Filtros e Busca -->
+      <div class="bg-white p-4 rounded-xl shadow-md flex flex-wrap gap-4 justify-between items-center">
+        <div class="flex-1 min-w-[200px]">
+          <input type="text" id="searchInput" oninput="filterData()" placeholder="Buscar por aluno, responsável ou código..." class="w-full p-2 border rounded-md text-sm outline-none focus:ring-2 focus:ring-indigo-500">
+        </div>
+        <div class="flex space-x-2">
+          <select id="statusFilter" onchange="filterData()" class="p-2 border rounded-md text-sm outline-none">
+            <option value="ALL">Todos os Status</option>
+            <option value="Pendente">Pendentes</option>
+            <option value="Aprovado">Aprovados</option>
+            <option value="Rejeitado">Rejeitados</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Tabela de Matrículas -->
+      <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-200">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm text-gray-600">
+            <thead class="bg-indigo-900 text-white uppercase text-xs">
+              <tr>
+                <th class="p-3">Cód.</th>
+                <th class="p-3">Aluno / CPF</th>
+                <th class="p-3">Série / Turno</th>
+                <th class="p-3">Responsável / Fone</th>
+                <th class="p-3">Data</th>
+                <th class="p-3">Status</th>
+                <th class="p-3 text-center">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="enrollmentsTable" class="divide-y divide-gray-200">
+              <!-- Dados inseridos via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: CONFIGURAÇÕES DA ESCOLA E NÍVEIS DE ACESSO -->
+    <section id="tab-settings" class="hidden space-y-6">
+      
+      <!-- Se não estiver autenticado como ADMIN -->
+      <div id="settingsLoginBox" class="max-w-md mx-auto bg-white p-6 rounded-xl shadow-md border-t-4 border-indigo-600">
+        <div class="text-center mb-6">
+          <div class="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-2 text-xl">
+            <i class="fas fa-lock"></i>
+          </div>
+          <h2 class="text-xl font-bold text-gray-800">Acesso Restrito</h2>
+          <p class="text-xs text-gray-500">Faça login com sua conta de acesso ao sistema</p>
+        </div>
+
+        <form onsubmit="handleLogin(event)" class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">Usuário</label>
+            <input type="text" id="loginUser" required class="w-full p-2 border rounded-md text-sm outline-none focus:ring-2 focus:ring-indigo-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">Senha</label>
+            <input type="password" id="loginPass" required class="w-full p-2 border rounded-md text-sm outline-none focus:ring-2 focus:ring-indigo-500">
+          </div>
+          <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-md shadow transition">
+            Entrar no Painel
+          </button>
+        </form>
+
+        <div class="mt-4 p-3 bg-gray-50 rounded text-xs text-gray-600 border">
+          <p class="font-bold mb-1">Contas Padrão do Sistema:</p>
+          <p>• <strong>admin</strong> / <code>1234</code> (Acesso total)</p>
+          <p>• <strong>operador</strong> / <code>operador123</code> (Acesso básico)</p>
+        </div>
+      </div>
+
+      <!-- Painel de Configurações Liberado (Apenas ADMIN) -->
+      <div id="settingsContent" class="hidden bg-white rounded-xl shadow-md p-6 border-t-4 border-indigo-600">
+        <div class="flex justify-between items-center mb-6 pb-4 border-b">
+          <div>
+            <h2 class="text-2xl font-bold text-gray-800">Configurações do Sistema</h2>
+            <p class="text-xs text-gray-500">Altere informações da escola, turmas e gerencie permissões de usuários</p>
+          </div>
+          <span class="bg-purple-100 text-purple-800 text-xs font-bold px-3 py-1 rounded-full">
+            <i class="fas fa-user-shield mr-1"></i> Modo Administrador
+          </span>
+        </div>
+
+        <form onsubmit="saveSettings(event)" class="space-y-6">
+          
+          <!-- Dados Institucionais -->
+          <div class="bg-gray-50 p-4 rounded-lg border">
+            <h3 class="text-md font-semibold text-indigo-900 mb-3 flex items-center">
+              <i class="fas fa-school mr-2"></i> Dados Institucionais
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">Nome da Escola</label>
+                <input type="text" id="cfgSchoolName" required class="w-full p-2 border rounded-md outline-none">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">Subtítulo / Slogan</label>
+                <input type="text" id="cfgSchoolSub" required class="w-full p-2 border rounded-md outline-none">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">Ano Letivo Principal</label>
+                <input type="text" id="cfgSchoolYear" required class="w-full p-2 border rounded-md outline-none">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">Telefone / WhatsApp</label>
+                <input type="text" id="cfgSchoolPhone" required class="w-full p-2 border rounded-md outline-none">
+              </div>
+            </div>
+          </div>
+
+          <!-- Séries e Turnos -->
+          <div class="bg-gray-50 p-4 rounded-lg border">
+            <h3 class="text-md font-semibold text-indigo-900 mb-3 flex items-center">
+              <i class="fas fa-layer-group mr-2"></i> Séries e Turnos Disponíveis
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">Séries (separadas por vírgula)</label>
+                <textarea id="cfgGrades" rows="3" class="w-full p-2 border rounded-md text-sm outline-none"></textarea>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold uppercase text-gray-600 mb-1">Turnos (separados por vírgula)</label>
+                <textarea id="cfgShifts" rows="3" class="w-full p-2 border rounded-md text-sm outline-none"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- Gestão de Senhas dos Usuários -->
+          <div class="bg-gray-50 p-4 rounded-lg border">
+            <h3 class="text-md font-semibold text-indigo-900 mb-3 flex items-center">
+              <i class="fas fa-users-cog mr-2"></i> Gerenciamento de Senhas e Níveis
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="p-3 bg-white rounded border">
+                <span class="text-xs font-bold text-indigo-700 block mb-2">Conta de Administrador (admin)</span>
+                <label class="block text-xs text-gray-600 mb-1">Nova Senha do Admin</label>
+                <input type="password" id="cfgAdminPass" placeholder="Nova senha admin" class="w-full p-2 border rounded-md text-sm outline-none">
+              </div>
+              <div class="p-3 bg-white rounded border">
+                <span class="text-xs font-bold text-indigo-700 block mb-2">Conta de Operador (operador)</span>
+                <label class="block text-xs text-gray-600 mb-1">Nova Senha do Operador</label>
+                <input type="password" id="cfgOpPass" placeholder="Nova senha operador" class="w-full p-2 border rounded-md text-sm outline-none">
+              </div>
+            </div>
+          </div>
+
+          <div class="text-right">
+            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold px-6 py-2 rounded-lg shadow transition">
+              <i class="fas fa-save mr-1"></i> Salvar Alterações
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modal Detalhes / Alteração de Status da Matrícula -->
+  <div id="modalDetails" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full p-6 space-y-4">
+      <div class="flex justify-between items-center border-b pb-3">
+        <h3 class="text-lg font-bold text-gray-800">Detalhes da Matrícula #<span id="modalId"></span></h3>
+        <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 text-xl font-bold">×</button>
+      </div>
+
+      <div id="modalContent" class="space-y-3 text-sm">
+        <!-- Preenchido via JS -->
+      </div>
+
+      <div class="border-t pt-4 flex flex-wrap justify-between items-center gap-2">
+        <div class="flex space-x-2">
+          <button onclick="updateStatus('Aprovado')" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-md text-xs font-bold">
+            Aprovar
+          </button>
+          <button onclick="updateStatus('Rejeitado')" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-md text-xs font-bold">
+            Rejeitar
+          </button>
+          <button onclick="updateStatus('Pendente')" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1.5 rounded-md text-xs font-bold">
+            Deixar Pendente
+          </button>
+        </div>
+        <button onclick="closeModal()" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-1.5 rounded-md text-xs font-bold">
+          Fechar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="bg-gray-800 text-gray-400 text-xs py-4 text-center mt-auto no-print">
+    <p>© <span class="schoolYearText">2027</span> <span id="footerSchoolName">Colégio Ethos</span> - Sistema de Matrículas Escolares.</p>
+  </footer>
+
+  <!-- Script Lógica do Sistema -->
+  <script>
+    // Configurações e Estado Inicial do Sistema
+    let config = JSON.parse(localStorage.getItem('schoolConfig')) || {
+      name: "Colégio Ethos",
+      sub: "Sistema de Matrículas 2027",
+      year: "2027",
+      phone: "(81) 98888-7777",
+      grades: ["Educação Infantil", "1º Ano Fundamental", "2º Ano Fundamental", "3º Ano Fundamental", "4º Ano Fundamental", "5º Ano Fundamental", "6º Ano Fundamental", "7º Ano Fundamental", "8º Ano Fundamental", "9º Ano Fundamental", "1º Ano Ensino Médio", "2º Ano Ensino Médio", "3º Ano Ensino Médio"],
+      shifts: ["Manhã", "Tarde", "Integral"],
+      adminPass: "1234",
+      opPass: "operador123"
+    };
+
+    let enrollments = JSON.parse(localStorage.getItem('schoolEnrollments')) || [
+      {
+        id: 1001,
+        studentName: "Lucas Silva Ribeiro",
+        studentBirth: "2015-05-12",
+        studentCpf: "123.456.789-00",
+        studentGrade: "6º Ano Fundamental",
+        studentShift: "Manhã",
+        parentName: "Mariana Silva Ribeiro",
+        parentCpf: "987.654.321-11",
+        parentPhone: "(81) 99999-1111",
+        parentEmail: "mariana@email.com",
+        parentAddress: "Rua das Flores, 120 - Centro",
+        specialNeeds: "Nenhuma",
+        date: "2026-11-01 10:30",
+        status: "Pendente"
+      }
+    ];
+
+    let currentUser = JSON.parse(sessionStorage.getItem('currentUser')) || null; // null, { role: 'admin' }, { role: 'operador' }
+    let selectedEnrollmentId = null;
+
+    // Inicialização da Aplicação
+    document.addEventListener("DOMContentLoaded", () => {
+      applyConfigUI();
+      renderEnrollmentsTable();
+      updateAuthUI();
+    });
+
+    // Atualiza elementos visuais com base nas configurações salvadas
+    function applyConfigUI() {
+      document.getElementById('headerSchoolName').innerText = config.name;
+      document.getElementById('headerSchoolSub').innerText = config.sub;
+      document.getElementById('footerSchoolName').innerText = config.name;
+      document.querySelectorAll('.schoolYearText').forEach(el => el.innerText = config.year);
+
+      // Preenche Selects
+      const gradeSelect = document.getElementById('studentGrade');
+      gradeSelect.innerHTML = config.grades.map(g => `<option value="${g}">${g}</option>`).join('');
+
+      const shiftSelect = document.getElementById('studentShift');
+      shiftSelect.innerHTML = config.shifts.map(s => `<option value="${s}">${s}</option>`).join('');
+    }
+
+    // Troca de Abas
+    function switchTab(tab) {
+      document.getElementById('tab-public').classList.add('hidden');
+      document.getElementById('tab-admin').classList.add('hidden');
+      document.getElementById('tab-settings').classList.add('hidden');
+
+      if (tab === 'admin') {
+        if (!currentUser) {
+          switchTab('settings');
+          return;
+        }
+        document.getElementById('tab-admin').classList.remove('hidden');
+        renderEnrollmentsTable();
+      } else if (tab === 'settings') {
+        document.getElementById('tab-settings').classList.remove('hidden');
+        if (currentUser && currentUser.role === 'admin') {
+          showSettingsPanel();
+        } else if (currentUser && currentUser.role === 'operador') {
+          alert('Acesso Restrito: Usuários do perfil Operador não possuem permissão para alterar as configurações.');
+          switchTab('admin');
+        } else {
+          showLoginBox();
+        }
+      } else {
+        document.getElementById('tab-public').classList.remove('hidden');
+      }
+    }
+
+    // Autenticação / Login
+    function handleLogin(e) {
+      e.preventDefault();
+      const user = document.getElementById('loginUser').value.trim().toLowerCase();
+      const pass = document.getElementById('loginPass').value.trim();
+
+      if (user === 'admin' && pass === config.adminPass) {
+        currentUser = { user: 'admin', role: 'admin' };
+        sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
+        updateAuthUI();
+        switchTab('admin');
+      } else if (user === 'operador' && pass === config.opPass) {
+        currentUser = { user: 'operador', role: 'operador' };
+        sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
+        updateAuthUI();
+        switchTab('admin');
+      } else {
+        alert('Usuário ou senha incorretos!');
+      }
+    }
+
+    function logoutSession() {
+      currentUser = null;
+      sessionStorage.removeItem('currentUser');
+      updateAuthUI();
+      switchTab('public');
+    }
+
+    function updateAuthUI() {
+      const userBadge = document.getElementById('userBadge');
+      const navSettings = document.getElementById('nav-settings');
+
+      if (currentUser) {
+        if (currentUser.role === 'admin') {
+          userBadge.innerHTML = `<i class="fas fa-user-shield mr-1"></i> Perfil: Administrador`;
+          userBadge.className = "bg-purple-100 text-purple-800 text-xs font-semibold px-3 py-1 rounded-full flex items-center";
+          navSettings.classList.remove('hidden');
+        } else {
+          userBadge.innerHTML = `<i class="fas fa-user mr-1"></i> Perfil: Operador (Secretaria)`;
+          userBadge.className = "bg-blue-100 text-blue-800 text-xs font-semibold px-3 py-1 rounded-full flex items-center";
+          navSettings.classList.add('hidden'); // Oculta botão de configurações para operador
+        }
+      }
+    }
+
+    function showLoginBox() {
+      document.getElementById('settingsLoginBox').classList.remove('hidden');
+      document.getElementById('settingsContent').classList.add('hidden');
+    }
+
+    function showSettingsPanel() {
+      document.getElementById('settingsLoginBox').classList.add('hidden');
+      document.getElementById('settingsContent').classList.remove('hidden');
+
+      document.getElementById('cfgSchoolName').value = config.name;
+      document.getElementById('cfgSchoolSub').value = config.sub;
+      document.getElementById('cfgSchoolYear').value = config.year;
+      document.getElementById('cfgSchoolPhone').value = config.phone;
+      document.getElementById('cfgGrades').value = config.grades.join(', ');
+      document.getElementById('cfgShifts').value = config.shifts.join(', ');
+    }
+
+    // Salvar Configurações
+    function saveSettings(e) {
+      e.preventDefault();
+      config.name = document.getElementById('cfgSchoolName').value.trim();
+      config.sub = document.getElementById('cfgSchoolSub').value.trim();
+      config.year = document.getElementById('cfgSchoolYear').value.trim();
+      config.phone = document.getElementById('cfgSchoolPhone').value.trim();
+      
+      config.grades = document.getElementById('cfgGrades').value.split(',').map(s => s.trim()).filter(Boolean);
+      config.shifts = document.getElementById('cfgShifts').value.split(',').map(s => s.trim()).filter(Boolean);
+
+      const newAdminPass = document.getElementById('cfgAdminPass').value.trim();
+      if (newAdminPass) config.adminPass = newAdminPass;
+
+      const newOpPass = document.getElementById('cfgOpPass').value.trim();
+      if (newOpPass) config.opPass = newOpPass;
+
+      localStorage.setItem('schoolConfig', JSON.stringify(config));
+      applyConfigUI();
+      alert('Configurações salvas com sucesso!');
+    }
+
+    // Envio do Formulário de Matrícula
+    function handleFormSubmit(e) {
+      e.preventDefault();
+      const newEnrollment = {
+        id: Math.floor(1000 + Math.random() * 9000),
+        studentName: document.getElementById('studentName').value,
+        studentBirth: document.getElementById('studentBirth').value,
+        studentCpf: document.getElementById('studentCpf').value || 'Não informado',
+        studentGrade: document.getElementById('studentGrade').value,
+        studentShift: document.getElementById('studentShift').value,
+        parentName: document.getElementById('parentName').value,
+        parentCpf: document.getElementById('parentCpf').value,
+        parentPhone: document.getElementById('parentPhone').value,
+        parentEmail: document.getElementById('parentEmail').value,
+        parentAddress: document.getElementById('parentAddress').value,
+        specialNeeds: document.getElementById('specialNeeds').value || 'Nenhuma',
+        date: new Date().toLocaleString('pt-BR').slice(0, 16),
+        status: "Pendente"
+      };
+
+      enrollments.unshift(newEnrollment);
+      localStorage.setItem('schoolEnrollments', JSON.stringify(enrollments));
+      document.getElementById('enrollmentForm').reset();
+      alert(`Solicitação de matrícula #${newEnrollment.id} enviada com sucesso! Aguarde o contato da secretaria.`);
+    }
+
+    // Renderizar Tabela no Painel
+    function renderEnrollmentsTable() {
+      const tbody = document.getElementById('enrollmentsTable');
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      const status = document.getElementById('statusFilter').value;
+
+      const filtered = enrollments.filter(item => {
+        const matchesSearch = item.studentName.toLowerCase().includes(search) || 
+                              item.parentName.toLowerCase().includes(search) || 
+                              item.id.toString().includes(search);
+        const matchesStatus = status === 'ALL' || item.status === status;
+        return matchesSearch && matchesStatus;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center p-6 text-gray-400">Nenhuma solicitação encontrada.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(item => `
+        <tr class="hover:bg-gray-50 border-b">
+          <td class="p-3 font-bold">#${item.id}</td>
+          <td class="p-3">
+            <div class="font-semibold text-gray-800">${item.studentName}</div>
+            <div class="text-xs text-gray-400">CPF: ${item.studentCpf}</div>
+          </td>
+          <td class="p-3">
+            <div>${item.studentGrade}</div>
+            <span class="text-xs text-indigo-600 font-medium">${item.studentShift}</span>
+          </td>
+          <td class="p-3">
+            <div>${item.parentName}</div>
+            <div class="text-xs text-gray-400">${item.parentPhone}</div>
+          </td>
+          <td class="p-3 text-xs">${item.date}</td>
+          <td class="p-3">${getStatusBadge(item.status)}</td>
+          <td class="p-3 text-center">
+            <button onclick="openModal(${item.id})" class="bg-indigo-100 hover:bg-indigo-200 text-indigo-700 px-3 py-1 rounded text-xs font-bold transition">
+              <i class="fas fa-eye mr-1"></i> Analisar
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function filterData() {
+      renderEnrollmentsTable();
+    }
+
+    function getStatusBadge(status) {
+      if (status === 'Aprovado') return `<span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-bold">Aprovado</span>`;
+      if (status === 'Rejeitado') return `<span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full font-bold">Rejeitado</span>`;
+      return `<span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full font-bold">Pendente</span>`;
+    }
+
+    // Modal de Detalhes
+    function openModal(id) {
+      selectedEnrollmentId = id;
+      const item = enrollments.find(e => e.id === id);
+      if (!item) return;
+
+      document.getElementById('modalId').innerText = item.id;
+      document.getElementById('modalContent').innerHTML = `
+        <div class="grid grid-cols-2 gap-2 bg-gray-50 p-3 rounded border">
+          <div><strong>Aluno:</strong> ${item.studentName}</div>
+          <div><strong>Nascimento:</strong> ${item.studentBirth}</div>
+          <div><strong>CPF Aluno:</strong> ${item.studentCpf}</div>
+          <div><strong>Série/Turno:</strong> ${item.studentGrade} (${item.studentShift})</div>
+        </div>
+        <div class="grid grid-cols-2 gap-2 bg-gray-50 p-3 rounded border">
+          <div><strong>Responsável:</strong> ${item.parentName}</div>
+          <div><strong>CPF Responsável:</strong> ${item.parentCpf}</div>
+          <div><strong>Telefone:</strong> ${item.parentPhone}</div>
+          <div><strong>E-mail:</strong> ${item.parentEmail}</div>
+          <div class="col-span-2"><strong>Endereço:</strong> ${item.parentAddress}</div>
+        </div>
+        <div class="bg-gray-50 p-3 rounded border">
+          <strong>Observações/Alergias:</strong> ${item.specialNeeds}
+        </div>
+        <div><strong>Status Atual:</strong> ${getStatusBadge(item.status)}</div>
+      `;
+
+      document.getElementById('modalDetails').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('modalDetails').classList.add('hidden');
+    }
+
+    function updateStatus(newStatus) {
+      if (!selectedEnrollmentId) return;
+      const index = enrollments.findIndex(e => e.id === selectedEnrollmentId);
+      if (index !== -1) {
+        enrollments[index].status = newStatus;
+        localStorage.setItem('schoolEnrollments', JSON.stringify(enrollments));
+        renderEnrollmentsTable();
+        closeModal();
+      }
+    }
+  </script>
+</body>
+</html>
